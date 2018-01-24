@@ -1,0 +1,3 @@
+[submodule "play-scraper"]
+	path = play-scraper
+	url = git@github.com:danieliu/play-scraper.git
