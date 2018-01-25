@@ -20,14 +20,23 @@ def get_play_store_app_data(url):
     args = ["node", "node/scraper.js", app_id]
     result = subprocess.check_output(args).decode()
 
-    return demjson.decode(result)
+    try:
+        return demjson.decode(result)
+    except Exception as err:
+        # Just assume any communication error as item not found. Could be improved to parse the error thrown:
+        raise GetStoreDataItemNotFound() from err
 
 def parse_store_app_url(url, expected_hostname, expected_id_param_key):
     split = urllib.parse.urlsplit(url)
+
     if split.hostname != expected_hostname:
         raise GetStoreDataBadHostError()
 
     params = urllib.parse.parse_qs(split.query)
-    app_id = params["id"][0]
+
+    if not expected_id_param_key in params:
+        raise GetStoreDataMissingIdParameterError()
+
+    app_id = params[expected_id_param_key][0]
 
     return app_id
