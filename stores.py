@@ -3,14 +3,19 @@ import demjson
 import urllib
 #import requests
 
-class StoreDataError(Exception):
-    pass
-    
-
-class StoreDataBadHostError(StoreDataError):
+class GetStoreDataError(Exception):
     pass
 
-def retrieve_play_store_app_data(url):
+class GetStoreDataBadHostError(GetStoreDataError):
+    pass
+
+class GetStoreDataMissingIdParameterError(GetStoreDataError):
+    pass
+
+class GetStoreDataItemNotFound(GetStoreDataError):
+    pass
+
+def get_play_store_app_data(url):
     app_id = parse_store_app_url(url, "play.google.com", "id")
     args = ["node", "node/scraper.js", app_id]
     result = subprocess.check_output(args).decode()
@@ -20,7 +25,7 @@ def retrieve_play_store_app_data(url):
 def parse_store_app_url(url, expected_hostname, expected_id_param_key):
     split = urllib.parse.urlsplit(url)
     if split.hostname != expected_hostname:
-        raise StoreDataBadHostError()
+        raise GetStoreDataBadHostError()
 
     params = urllib.parse.parse_qs(split.query)
     app_id = params["id"][0]
