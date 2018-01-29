@@ -59,9 +59,7 @@ class build(_build):  # pylint: disable=invalid-name
 # TODO(BEAM-3237): Output from the custom commands are missing from the logs.
 # The output of custom commands (including failures) will be logged in the
 # worker-startup log.
-CUSTOM_COMMANDS = [
-    ['./install_node.sh'],
-    ['./install_google_play_scraper.sh']]
+CUSTOM_COMMANDS = [['./install_node.sh']]
 
 
 class CustomCommands(setuptools.Command):
