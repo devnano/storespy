@@ -21,7 +21,7 @@ def get_play_store_app_data(url):
     args = ["npm", "install", "google-play-scraper"]
     subprocess.check_output(args)
 
-    app_id = parse_store_app_url(url, "play.google.com", "id")
+    app_id = __parse_store_app_url(url, "play.google.com", "id")
     args = ["node", "-e", "var gplay = require('google-play-scraper'); gplay.app({{appId: '{0}'}}).then(console.log, console.log);".format(app_id)]
     result = subprocess.check_output(args).decode()
 
@@ -32,7 +32,7 @@ def get_play_store_app_data(url):
         raise GetStoreDataItemNotFound() from err
 
 def get_app_store_app_data(url):
-    app_id = parse_store_app_url(url, "itunes.apple.com", "id")
+    app_id = __parse_store_app_url(url, "itunes.apple.com", "id")
     err = None
     try:
         r = requests.get("https://itunes.apple.com/lookup?id={0}".format(app_id))
@@ -47,7 +47,7 @@ def get_app_store_app_data(url):
 
     raise GetStoreDataItemNotFound()
 
-def parse_store_app_url(url, expected_hostname, expected_id_param_key):
+def __parse_store_app_url(url, expected_hostname, expected_id_param_key):
     split = urllib.parse.urlsplit(url)
 
     if split.hostname != expected_hostname:
@@ -58,9 +58,9 @@ def parse_store_app_url(url, expected_hostname, expected_id_param_key):
     if expected_id_param_key in params:
         return params[expected_id_param_key][0]
 
-    return parse_app_id_from_path(split.path, expected_id_param_key)
+    return __parse_app_id_from_path(split.path, expected_id_param_key)
 
-def parse_app_id_from_path(path, expected_id_param_key):
+def __parse_app_id_from_path(path, expected_id_param_key):
     components = path.split(expected_id_param_key)
     if len(components) < 2:
         raise GetStoreDataMissingIdParameterError()
