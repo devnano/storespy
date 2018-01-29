@@ -17,8 +17,12 @@ class GetStoreDataItemNotFound(GetStoreDataError):
     pass
 
 def get_play_store_app_data(url):
+    # Installing npm here… check if this is running just the first time or on every execution.
+    args = ["npm", "install", "google-play-scraper"]
+    subprocess.check_output(args)
+
     app_id = parse_store_app_url(url, "play.google.com", "id")
-    args = ["node", "{0}/../../data/scraper.js".format(os.path.realpath(__file__)), app_id]
+    args = ["node", "-e", "var gplay = require('google-play-scraper'); gplay.app({{appId: '{0}'}}).then(console.log, console.log);".format(app_id)]
     result = subprocess.check_output(args).decode()
 
     try:
