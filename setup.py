@@ -104,8 +104,9 @@ REQUIRED_PACKAGES = [
 
 setuptools.setup(
     name='storespy',
-    version='0.0.9',
+    version='0.0.10',
     description='Get Google Play and App Store app info.',
+    packages=['storespy'],
     install_requires=REQUIRED_PACKAGES,
     cmdclass={
         # Command class instantiated and run during pip install scenarios.
