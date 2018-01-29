@@ -61,8 +61,7 @@ class build(_build):  # pylint: disable=invalid-name
 # worker-startup log.
 CUSTOM_COMMANDS = [
     ['./install_node.sh'],
-    ['cd', 'node'],
-    ['npm', 'install']]
+    ['./install_google_play_scraper.sh']]
 
 
 class CustomCommands(setuptools.Command):
@@ -105,7 +104,7 @@ REQUIRED_PACKAGES = [
 
 setuptools.setup(
     name='storespy',
-    version='0.0.1',
+    version='0.0.2',
     description='Get Google Play and App Store app info.',
     install_requires=REQUIRED_PACKAGES,
     packages=setuptools.find_packages(),
