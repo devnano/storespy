@@ -1,0 +1,9 @@
+{
+  "name": "google-play-scraper-wrapper",
+  "version": "0.0.1",
+  "description": "Get Google Play app data by its package name.",
+  "main": "scraper.js",
+  "dependencies": {
+    "google-play-scraper": "4.0.0"
+  }
+}
