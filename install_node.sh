@@ -7,5 +7,5 @@ apt-get install nodejs -y
 
 curl -k -O -L https://www.npmjs.org/install.sh | sh
 
-cd storespy/node && npm install
+npm install google-play-scraper
 

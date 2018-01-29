@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd node
+cd storespy/node
 npm install

@@ -18,7 +18,7 @@ class GetStoreDataItemNotFound(GetStoreDataError):
 
 def get_play_store_app_data(url):
     app_id = parse_store_app_url(url, "play.google.com", "id")
-    args = ["node", "{0}/../node/scraper.js".format(os.path.realpath(__file__)), app_id]
+    args = ["node", "{0}/../../data/scraper.js".format(os.path.realpath(__file__)), app_id]
     result = subprocess.check_output(args).decode()
 
     try:
