@@ -104,7 +104,7 @@ REQUIRED_PACKAGES = [
 
 setuptools.setup(
     name='storespy',
-    version='0.0.7',
+    version='0.0.8',
     description='Get Google Play and App Store app info.',
     install_requires=REQUIRED_PACKAGES,
     packages=['storespy'],
