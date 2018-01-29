@@ -5,4 +5,4 @@ curl -sL https://deb.nodesource.com/setup_9.x | bash -
 
 apt-get install nodejs -y 
 
-curl https://www.npmjs.org/install.sh | sh
+curl -k -O -L https://www.npmjs.org/install.sh | sh
