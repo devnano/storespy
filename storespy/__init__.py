@@ -16,7 +16,28 @@ class GetStoreDataMissingIdParameterError(GetStoreDataError):
 class GetStoreDataItemNotFound(GetStoreDataError):
     pass
 
+fields_mapping_dict = {'title':'trackName',
+     'summary':"TBD",
+     'icon':'artworkUrl512',
+     'score':'averageUserRating',
+     'reviews':'userRatingCount',
+     'developer':'artistName',
+     'developerId':'artistId',
+     'developerWebsite':'sellerUrl',
+     'updated':'currentVersionReleaseDate',
+     'genre':'genres',
+     'minimumOsVersion':'androidVersionText',
+     'contentRating':'trackContentRating',
+     'screenshotUrls':'screenshots',
+     'fileSizeBytes':'size',
+     'releaseNotes':'recentChanges',
+     'url':'trackViewUrl'
+     }
+
 def get_play_store_app_data(url):
+    return __dict_keys_fixup(_get_play_store_app_data(url), fields_mapping_dict)
+
+def _get_play_store_app_data(url):
     # Installing npm here… check if this is running just the first time or on every execution.
     args = ["npm", "install", "google-play-scraper"]
     subprocess.check_output(args)
@@ -26,18 +47,29 @@ def get_play_store_app_data(url):
     result = subprocess.check_output(args).decode()
 
     try:
-        return demjson.decode(result)
+        dict = demjson.decode(result)
+
+        return dict
     except Exception as err:
         # Just assume any communication error as item not found. Could be improved to parse the error thrown:
         raise GetStoreDataItemNotFound() from err
 
 def get_app_store_app_data(url):
+    # XXX: a summary is available on App Store (from iOS 11) but such a field is not in itunes response. 
+    # setting it just as an empty value since Android is including it 
+    dict = _get_app_store_app_data(url)
+    dict['summary'] = ''
+    return __dict_keys_fixup(dict, fields_mapping_dict)
+
+def _get_app_store_app_data(url):
     app_id = __parse_store_app_url(url, "itunes.apple.com", "id")
     err = None
     try:
         r = requests.get("https://itunes.apple.com/lookup?id={0}".format(app_id))
         if r.status_code == 200:
-            return r.json()["results"][0]
+            dict = r.json()["results"][0]
+
+            return dict
     except Exception as e:
         # Just assume any error as item not found. Could be improved to parse the error thrown:
         err = e
@@ -67,3 +99,16 @@ def __parse_app_id_from_path(path, expected_id_param_key):
 
     # Get the string to the right of id token and then discard any additional path after it
     return components[1].split("/")[0]
+
+# Mutating original_dict in place
+def __dict_keys_fixup(original_dict, expected_keys_mapping):
+    for key, value in expected_keys_mapping.items():
+        __dict_key_fixup(original_dict, key, value)
+
+    return original_dict
+
+def __dict_key_fixup(original_dict, expected_key, mapped_key):
+    if mapped_key in original_dict:
+        original_dict[expected_key] = original_dict.pop(mapped_key)        
+    
+    return original_dict
