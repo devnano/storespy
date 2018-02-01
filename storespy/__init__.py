@@ -71,7 +71,7 @@ def _get_app_store_app_data(url):
         r = requests.get("https://itunes.apple.com/lookup?id={0}".format(app_id))
         if r.status_code == 200:
             dict = r.json()["results"][0]
-            dict['reviews'] = _get_app_store_app_reviews(app_id) 
+            dict['review_entries'] = _get_app_store_app_reviews(app_id) 
 
             return dict
     except Exception as e:
@@ -82,6 +82,22 @@ def _get_app_store_app_data(url):
         raise GetStoreDataItemNotFound() from err
 
     raise GetStoreDataItemNotFound()
+
+def _get_app_store_app_reviews(app_id):
+    r = requests.get("https://itunes.apple.com/us/rss/customerreviews/id={0}/sortby=mostRecent/page=1/xml".format(app_id))
+    r.encoding = 'utf-8'
+    feed = xmltodict.parse(r.text)
+
+    return _get_reviews_from_feed(feed)
+
+def _get_reviews_from_feed(feed):
+    entries = feed.get('feed', {}).get('entry', [])[1:]
+    reviews = []
+    for entry in entries:
+        review = _get_review_from_entry(entry)
+        reviews.append(review)
+
+    return reviews
 
 def _get_review_from_entry(entry):
     review = {}
@@ -95,18 +111,6 @@ def _get_review_from_entry(entry):
     review["text"] = entry['content'][0]['#text']
 
     return review
-
-def _get_app_store_app_reviews(app_id):
-    r = requests.get("https://itunes.apple.com/us/rss/customerreviews/id={0}/sortby=mostRecent/page=1/xml".format(app_id))
-    r.encoding = 'utf-8'
-    xml = xmltodict.parse(r.text)
-    entries = xml['feed']['entry'][1:]
-    reviews = []
-    for entry in entries:
-        review = _get_review_from_entry(entry)
-        reviews.append(review)
-
-    return reviews
 
 def __parse_store_app_url(url, expected_hostname, expected_id_param_key):
     split = urllib.parse.urlsplit(url)
