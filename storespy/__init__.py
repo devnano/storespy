@@ -3,6 +3,8 @@ import demjson
 import urllib
 import requests
 import os
+import xmltodict
+import dateutil.parser
 
 class GetStoreDataError(Exception):
     pass
@@ -58,7 +60,8 @@ def get_app_store_app_data(url):
     # XXX: a summary is available on App Store (from iOS 11) but such a field is not in itunes response. 
     # setting it just as an empty value since Android is including it 
     dict = _get_app_store_app_data(url)
-    dict['summary'] = ''
+    dict['summary'] = ""
+
     return __dict_keys_fixup(dict, fields_mapping_dict)
 
 def _get_app_store_app_data(url):
@@ -68,6 +71,7 @@ def _get_app_store_app_data(url):
         r = requests.get("https://itunes.apple.com/lookup?id={0}".format(app_id))
         if r.status_code == 200:
             dict = r.json()["results"][0]
+            dict['reviews'] = _get_app_store_app_reviews(app_id) 
 
             return dict
     except Exception as e:
@@ -78,6 +82,31 @@ def _get_app_store_app_data(url):
         raise GetStoreDataItemNotFound() from err
 
     raise GetStoreDataItemNotFound()
+
+def _get_review_from_entry(entry):
+    review = {}
+    review["title"] = entry['title']
+    review["date"] = dateutil.parser.parse(entry['updated'])
+    review["version"] = entry['im:version']
+    review["score"] = entry['im:rating']
+    review["userName"] = entry['author']['name']
+    review["userUrl"] = entry['author']['uri']
+    review["url"] = entry['link']['@href']
+    review["text"] = entry['content'][0]['#text']
+
+    return review
+
+def _get_app_store_app_reviews(app_id):
+    r = requests.get("https://itunes.apple.com/us/rss/customerreviews/id={0}/sortby=mostRecent/page=1/xml".format(app_id))
+    r.encoding = 'utf-8'
+    xml = xmltodict.parse(r.text)
+    entries = xml['feed']['entry'][1:]
+    reviews = []
+    for entry in entries:
+        review = _get_review_from_entry(entry)
+        reviews.append(review)
+
+    return reviews
 
 def __parse_store_app_url(url, expected_hostname, expected_id_param_key):
     split = urllib.parse.urlsplit(url)
