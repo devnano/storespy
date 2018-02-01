@@ -96,7 +96,9 @@ class CustomCommands(setuptools.Command):
 REQUIRED_PACKAGES = [
     'requests==2.18.4',
     'pytest==3.3.2',
-    'demjson==2.2.4'
+    'demjson==2.2.4',
+    'xmltodict==0.11.0',
+    'python-dateutil==2.6.1'
     ]
 
 
