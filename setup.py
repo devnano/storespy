@@ -59,7 +59,7 @@ class build(_build):  # pylint: disable=invalid-name
 # TODO(BEAM-3237): Output from the custom commands are missing from the logs.
 # The output of custom commands (including failures) will be logged in the
 # worker-startup log.
-CUSTOM_COMMANDS = [['./install_node.sh']]
+CUSTOM_COMMANDS = []
 
 
 class CustomCommands(setuptools.Command):
@@ -101,6 +101,9 @@ REQUIRED_PACKAGES = [
     'python-dateutil==2.6.1'
     ]
 
+DEPENDENCY_LINKS = [
+    'git+https://github.com/winclap/play-scraper.git@v0.2.0'
+]
 
 setuptools.setup(
     name='storespy',
@@ -108,9 +111,9 @@ setuptools.setup(
     description='Get Google Play and App Store app info.',
     packages=['storespy'],
     install_requires=REQUIRED_PACKAGES,
+    dependency_links=DEPENDENCY_LINKS,
     cmdclass={
         # Command class instantiated and run during pip install scenarios.
-        'build': build,
-        'CustomCommands': CustomCommands,
+        'build': build
         }
     )
