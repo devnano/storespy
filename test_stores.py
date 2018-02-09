@@ -78,8 +78,7 @@ def test_parse_app_id_from_path_not_last_component():
     id = storespy.__parse_app_id_from_path("us/app/google-chrome/id535886823/extra/paths", "id")
     assert id == "535886823"
 
-expected_fields = ['contentRating', 'description', 'developer', 'developerId', 'developerWebsite', 'fileSizeBytes', 'genre', 'icon', 'minimumOsVersion', 'price', 'releaseNotes', 'reviews', 'score', 'screenshotUrls', 'summary', 'title', 'updated', 'url', 'version']
-
+expected_fields = ['category', 'content_rating', 'developer', 'developer_id', 'developer_url', 'fileSizeBytes', 'icon', 'minimumOsVersion', 'releaseNotes', 'reviews', 'score', 'screenshotUrls', 'title', 'updated', 'url']
 def test_parse_app_id_from_path_missing():
     with pytest.raises(storespy.GetStoreDataMissingIdParameterError):
         storespy.__parse_app_id_from_path("us/app/google-chrome", "id")

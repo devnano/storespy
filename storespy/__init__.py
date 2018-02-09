@@ -1,7 +1,5 @@
-import subprocess
 import urllib
 import requests
-import os
 import xmltodict
 import dateutil.parser
 import play_scraper
@@ -19,20 +17,19 @@ class GetStoreDataItemNotFound(GetStoreDataError):
     pass
 
 fields_mapping_dict = {'title':'trackName',
-     'summary':"TBD",
      'icon':'artworkUrl512',
      'score':'averageUserRating',
      'reviews':'userRatingCount',
      'developer':'artistName',
-     'developerId':'artistId',
-     'developerWebsite':'sellerUrl',
+     'developer_id':'artistId',
+     'developer_url':'sellerUrl',
      'updated':'currentVersionReleaseDate',
-     'genre':'genres',
-     'minimumOsVersion':'androidVersionText',
-     'contentRating':'trackContentRating',
+     'category':'genres',
+     'minimumOsVersion':'required_android_version',
+     'content_rating':'trackContentRating',
      'screenshotUrls':'screenshots',
      'fileSizeBytes':'size',
-     'releaseNotes':'recentChanges',
+     'releaseNotes':'recent_changes',
      'url':'trackViewUrl'
      }
 
@@ -44,17 +41,19 @@ def _get_play_store_app_data(url):
 
     try:
         result = play_scraper.details(app_id)
-
+        # XXX:
+        result['summary'] = "TODO: missing in play_scraper. Check it's feasible to modify its code and get summary value."
         return result
     except Exception as err:
         # Just assume any communication error as item not found. Could be improved to parse the error thrown:
         raise GetStoreDataItemNotFound() from err
 
 def get_app_store_app_data(url):
-    # XXX: a summary is available on App Store (from iOS 11) but such a field is not in itunes response. 
-    # setting it just as an empty value since Android is including it 
+
+
     dict = _get_app_store_app_data(url)
-    dict['summary'] = ""
+    # XXX: 
+    dict['summary'] = "a summary is available on App Store (from iOS 11) but such a field is not in itunes response. "
 
     return __dict_keys_fixup(dict, fields_mapping_dict)
 
