@@ -1,10 +1,10 @@
 import subprocess
-import demjson
 import urllib
 import requests
 import os
 import xmltodict
 import dateutil.parser
+import play_scraper
 
 class GetStoreDataError(Exception):
     pass
@@ -40,18 +40,12 @@ def get_play_store_app_data(url):
     return __dict_keys_fixup(_get_play_store_app_data(url), fields_mapping_dict)
 
 def _get_play_store_app_data(url):
-    # Installing npm here… check if this is running just the first time or on every execution.
-    args = ["npm", "install", "google-play-scraper"]
-    subprocess.check_output(args)
-
     app_id = __parse_store_app_url(url, "play.google.com", "id")
-    args = ["node", "-e", "var gplay = require('google-play-scraper'); gplay.app({{appId: '{0}'}}).then(console.log, console.log);".format(app_id)]
-    result = subprocess.check_output(args).decode()
 
     try:
-        dict = demjson.decode(result)
+        result = play_scraper.details(app_id)
 
-        return dict
+        return result
     except Exception as err:
         # Just assume any communication error as item not found. Could be improved to parse the error thrown:
         raise GetStoreDataItemNotFound() from err
