@@ -25,13 +25,13 @@ import setuptools
 REQUIRED_PACKAGES = [
     'requests==2.18.4',
     'pytest==3.3.2',
-    'demjson==2.2.4',
     'xmltodict==0.11.0',
-    'python-dateutil==2.6.1'
+    'python-dateutil==2.6.1',
+    'play-scraper>=0.2.0'
     ]
 
 DEPENDENCY_LINKS = [
-    'git+https://github.com/winclap/play-scraper.git@v0.2.0'
+    'git+https://github.com/winclap/play-scraper@0.2.0#egg=play-scraper-0.2.0'
 ]
 
 setuptools.setup(
