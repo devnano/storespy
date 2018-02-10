@@ -30,15 +30,15 @@ REQUIRED_PACKAGES = [
     'python-dateutil==2.6.1'
     ]
 
-DEPENDENCY_LINKS = [
-    'git+https://github.com/winclap/play-scraper.git@v0.2.0'
-]
+#DEPENDENCY_LINKS = [
+#    'git+https://github.com/winclap/play-scraper.git@v0.2.0'
+#]
 
 setuptools.setup(
     name='storespy',
-    version='0.0.15',
+    version='0.0.16',
     description='Get Google Play and App Store app info.',
-    packages=['storespy'],
+    packages=['storespy', 'play_scraper'],
     install_requires=REQUIRED_PACKAGES,
-    dependency_links=DEPENDENCY_LINKS,
+#    dependency_links=DEPENDENCY_LINKS,
     )
