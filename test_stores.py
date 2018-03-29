@@ -18,8 +18,8 @@ def test_parse_store_missing_id_param_error():
         storespy.__parse_store_app_url("http://play.google.com", "play.google.com", "id")
 
 def test_get_play_store_app_data_success():
-    result = storespy._get_play_store_app_data("https://play.google.com/store/apps/details?id=com.android.chrome&hl=en")
-    assert result["title"] == 'Google Chrome: Fast & Secure'
+    result = storespy._get_play_store_app_data("https://play.google.com/store/apps/details?id=com.americanwell.android.member.wellpoint&hl=en")
+    assert result["title"] == 'LiveHealth Online Mobile'
 
 def test_get_play_store_app_data_not_found():
     with pytest.raises(storespy.GetStoreDataItemNotFound):
@@ -92,14 +92,14 @@ def test_parse_app_id_from_path_missing():
 
 
 def test_google_play_expected_fields():
-    result = storespy.get_play_store_app_data("https://play.google.com/store/apps/details?id=com.android.chrome")
+    result = storespy.get_play_store_app_data("https://play.google.com/store/apps/details?id=com.android.chrome&hl=en")
     fields = list(set(result.keys()).intersection(expected_fields))
     fields.sort()
 
     assert expected_fields == fields
 
 def test_app_store_expected_fields():
-    result = storespy.get_app_store_app_data("https://itunes.apple.com/us/app/google-chrome/id535886823")
+    result = storespy.get_app_store_app_data("https://itunes.apple.com/us/app/google-chrome/id535886823&hl=en")
     fields = list(set(result.keys()).intersection(expected_fields))
     fields.sort()
 
