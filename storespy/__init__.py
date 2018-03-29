@@ -49,10 +49,8 @@ def _get_play_store_app_data(url):
         raise GetStoreDataItemNotFound() from err
 
 def get_app_store_app_data(url):
-
-
     dict = _get_app_store_app_data(url)
-    # XXX: 
+    # XXX:
     dict['summary'] = "a summary is available on App Store (from iOS 11) but such a field is not in itunes response. "
 
     return __dict_keys_fixup(dict, fields_mapping_dict)
@@ -64,7 +62,7 @@ def _get_app_store_app_data(url):
         r = requests.get("https://itunes.apple.com/lookup?id={0}".format(app_id))
         if r.status_code == 200:
             dict = r.json()["results"][0]
-            dict['review_entries'] = _get_app_store_app_reviews(app_id) 
+            dict['review_entries'] = _get_app_store_app_reviews(app_id)
 
             return dict
     except Exception as e:
@@ -120,11 +118,12 @@ def __parse_store_app_url(url, expected_hostname, expected_id_param_key):
 
 def __parse_app_id_from_path(path, expected_id_param_key):
     components = path.split(expected_id_param_key)
-    if len(components) < 2:
+    componentsLen = len(components)
+    if componentsLen < 2:
         raise GetStoreDataMissingIdParameterError()
 
     # Get the string to the right of id token and then discard any additional path after it
-    return components[1].split("/")[0]
+    return components[componentsLen-1].split("/")[0]
 
 # Mutating original_dict in place
 def __dict_keys_fixup(original_dict, expected_keys_mapping):
@@ -135,6 +134,6 @@ def __dict_keys_fixup(original_dict, expected_keys_mapping):
 
 def __dict_key_fixup(original_dict, expected_key, mapped_key):
     if mapped_key in original_dict:
-        original_dict[expected_key] = original_dict.pop(mapped_key)        
-    
+        original_dict[expected_key] = original_dict.pop(mapped_key)
+
     return original_dict

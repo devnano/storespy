@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import storespy
 import pytest
 import datetime
@@ -16,7 +18,7 @@ def test_parse_store_missing_id_param_error():
         storespy.__parse_store_app_url("http://play.google.com", "play.google.com", "id")
 
 def test_get_play_store_app_data_success():
-    result = storespy._get_play_store_app_data("https://play.google.com/store/apps/details?id=com.android.chrome")
+    result = storespy._get_play_store_app_data("https://play.google.com/store/apps/details?id=com.android.chrome&hl=en")
     assert result["title"] == 'Google Chrome: Fast & Secure'
 
 def test_get_play_store_app_data_not_found():
@@ -24,18 +26,23 @@ def test_get_play_store_app_data_not_found():
         storespy.get_play_store_app_data("https://play.google.com/store/apps/?id=non_existent_id")
 
 def test_get_app_store_app_data_success():
-    result = storespy._get_app_store_app_data("https://itunes.apple.com/us/app/google-chrome/id535886823")
+    result = storespy._get_app_store_app_data("https://itunes.apple.com/us/app/google-chrome/id535886823&hl=en")
+    assert "trackName" in result
+    assert "review_entries" in result
+
+def test_get_app_store_app_data_id_in_url_success():
+    result = storespy._get_app_store_app_data("https://itunes.apple.com/us/app/imprivata-id/id991327711?&hl=en")
     assert "trackName" in result
     assert "review_entries" in result
 
 def test_get_app_store_app_data_not_found():
     with pytest.raises(storespy.GetStoreDataItemNotFound):
-        storespy.get_app_store_app_data("https://itunes.apple.com/us/app/google-chrome/idno_existent")
+        storespy.get_app_store_app_data("https://itunes.apple.com/us/app/google-chrome/idno_existent&hl=en")
 
 def test_get_reviews_from_feed_empty():
     feed = {}
     reviews = storespy._get_reviews_from_feed(feed)
-    
+
     assert len(reviews) == 0
 
 def test_get_review_from_entry():
@@ -55,7 +62,7 @@ def test_get_review_from_entry():
 
 def test_get_app_store_app_reviews():
     reviews = storespy._get_app_store_app_reviews("535886823")
-    
+
     assert isinstance(reviews, list)
     assert len(reviews) > 0
     for review in reviews:
@@ -68,7 +75,7 @@ def test_get_app_store_app_reviews():
         assert "userUrl" in review
         assert "text" in review
         assert "url" in review
-    
+
 
 def test_parse_app_id_from_path_last_component():
     id = storespy.__parse_app_id_from_path("us/app/google-chrome/id535886823", "id")
@@ -102,28 +109,28 @@ def test_dict_keys_fixup():
     expected_keys_mapping_dict = {'a':'z', 'w':'c', 'z':'d'}
     original_dict = {'a':'1','c':'2', 'd':'3'}
     resulting_dict = storespy.__dict_keys_fixup(original_dict, expected_keys_mapping_dict)
-    
+
     assert resulting_dict == {'a':'1','w':'2','z':'3'}
 
 def test_dict_keys_fixup_no_change():
     expected_keys_mapping_dict = {'a':'z', 'w':'c', 'z':'d'}
     original_dict = {'a':'1','w':'2', 'x':'3'}
     resulting_dict = storespy.__dict_keys_fixup(original_dict, expected_keys_mapping_dict)
-    
+
     assert resulting_dict == {'a':'1','w':'2','x':'3'}
 
 def test_dict_keys_fixup_expected_key_present():
     expected_keys_mapping_dict = {'a':'z', 'w':'c', 'z':'d'}
     original_dict = {'a':'1','w':'2', 'z':'3'}
     resulting_dict = storespy.__dict_keys_fixup(original_dict, expected_keys_mapping_dict)
-    
+
     assert resulting_dict == {'a':'3','w':'2'}
 
 def test_dict_keys_fixup_key_not_present():
     expected_keys_mapping_dict = {'a':'z', 'w':'c', 'z':'d'}
     original_dict = {'a':'1','e':'2', 'f':'3'}
     resulting_dict = storespy.__dict_keys_fixup(original_dict, expected_keys_mapping_dict)
-    
+
     assert resulting_dict == {'a':'1','e':'2','f':'3'}
 
 def test_dict_key_fixup():
@@ -131,7 +138,7 @@ def test_dict_key_fixup():
     mapped_key = 'c'
     original_dict = {'a':'1','c':'2'}
     resulting_dict = storespy.__dict_key_fixup(original_dict, expected_key, mapped_key)
-    
+
     assert resulting_dict == {'a':'1','w':'2'}
 
 def test_dict_key_fixup_no_change():
@@ -139,7 +146,7 @@ def test_dict_key_fixup_no_change():
     mapped_key = 'c'
     original_dict = {'a':'1','w':'2'}
     resulting_dict = storespy.__dict_key_fixup(original_dict, expected_key, mapped_key)
-    
+
     assert resulting_dict == {'a':'1','w':'2'}
 
 def test_dict_key_fixup_key_not_present():
@@ -147,7 +154,7 @@ def test_dict_key_fixup_key_not_present():
     mapped_key = 'c'
     original_dict = {'a':'1','b':'2'}
     resulting_dict = storespy.__dict_key_fixup(original_dict, expected_key, mapped_key)
-    
+
     assert resulting_dict == {'a':'1','b':'2'}
 
 def test_dict_key_fixup_key_expected_key_present():
@@ -155,5 +162,5 @@ def test_dict_key_fixup_key_expected_key_present():
     mapped_key = 'c'
     original_dict = {'w':'1','c':'2'}
     resulting_dict = storespy.__dict_key_fixup(original_dict, expected_key, mapped_key)
-    
+
     assert resulting_dict == {'w':'2'}
