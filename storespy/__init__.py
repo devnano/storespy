@@ -16,7 +16,9 @@ class GetStoreDataMissingIdParameterError(GetStoreDataError):
 class GetStoreDataItemNotFound(GetStoreDataError):
     pass
 
-fields_mapping_dict = {'title':'trackName',
+fields_mapping_dict = {
+     'title': 'trackName',
+     'price': {'type': float, 'mapped_key': 'price'},
      'icon':'artworkUrl512',
      'score':'averageUserRating',
      'reviews':'userRatingCount',
@@ -34,7 +36,7 @@ fields_mapping_dict = {'title':'trackName',
      }
 
 def get_play_store_app_data(url):
-    return __dict_keys_fixup(_get_play_store_app_data(url), fields_mapping_dict)
+    return __dict_keys_value_fixup(_get_play_store_app_data(url), fields_mapping_dict)
 
 def _get_play_store_app_data(url):
     app_id = __parse_store_app_url(url, "play.google.com", "id")
@@ -53,7 +55,7 @@ def get_app_store_app_data(url):
     # XXX:
     dict['summary'] = "a summary is available on App Store (from iOS 11) but such a field is not in itunes response. "
 
-    return __dict_keys_fixup(dict, fields_mapping_dict)
+    return __dict_keys_value_fixup(dict, fields_mapping_dict)
 
 def _get_app_store_app_data(url):
     app_id = __parse_store_app_url(url, "itunes.apple.com", "id")
@@ -126,14 +128,28 @@ def __parse_app_id_from_path(path, expected_id_param_key):
     return components[componentsLen-1].split("/")[0]
 
 # Mutating original_dict in place
-def __dict_keys_fixup(original_dict, expected_keys_mapping):
-    for key, value in expected_keys_mapping.items():
-        __dict_key_fixup(original_dict, key, value)
+def __dict_keys_value_fixup(original_dict, expected_keys_value_mapping):
+    for key, value in expected_keys_value_mapping.items():
+        __dict_key_value_fixup(original_dict, key, value)
 
     return original_dict
 
-def __dict_key_fixup(original_dict, expected_key, mapped_key):
+def __dict_key_value_fixup(original_dict, expected_key, mapped_key_value):
+    mapped_key = mapped_key_value
+    expected_type = None
+    if isinstance(mapped_key_value, dict):
+        mapped_key = mapped_key_value['mapped_key']
+        expected_type = mapped_key_value['type']
+
     if mapped_key in original_dict:
         original_dict[expected_key] = original_dict.pop(mapped_key)
+
+    if (expected_type != None) and not isinstance(original_dict[expected_key], expected_type):
+        try:
+            original_dict[expected_key] = expected_type(original_dict[expected_key])
+        except Exception as e:
+            print(e)
+            print('Assigning None to field \'{}\''.format(expected_key) )
+            original_dict[expected_key] = None
 
     return original_dict
