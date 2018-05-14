@@ -86,7 +86,7 @@ def test_parse_app_id_from_path_not_last_component():
     assert id == "535886823"
 
 expected_fields_ios = ['category', 'content_rating', 'developer', 'developer_id', 'developer_url', 'fileSizeBytes', 'icon', 'minimumOsVersion', 'releaseNotes', 'reviews', 'score', 'screenshotUrls', 'title', 'updated', 'url']
-expected_fields_android = ['category', 'content_rating', 'fileSizeBytes', 'icon', 'minimumOsVersion', 'reviews', 'score', 'screenshotUrls', 'title', 'updated', 'url']
+# expected_fields_ios = ['category', 'content_rating', 'fileSizeBytes', 'icon', 'minimumOsVersion', 'reviews', 'score', 'screenshotUrls', 'title', 'updated', 'url']
 def test_parse_app_id_from_path_missing():
     with pytest.raises(storespy.GetStoreDataMissingIdParameterError):
         storespy.__parse_app_id_from_path("us/app/google-chrome", "id")
@@ -94,11 +94,11 @@ def test_parse_app_id_from_path_missing():
 
 def test_google_play_expected_fields():
     result = storespy.get_play_store_app_data("https://play.google.com/store/apps/details?id=com.android.chrome&hl=en")
-    fields = list(set(result.keys()).intersection(expected_fields_android))
+    fields = list(set(result.keys()).intersection(expected_fields_ios))
     fields.sort()
-    print(expected_fields_android)
+    print(expected_fields_ios)
     print(fields)
-    assert expected_fields_android == fields
+    assert expected_fields_ios == fields
 
 def test_app_store_expected_fields():
     result = storespy.get_app_store_app_data("https://itunes.apple.com/us/app/google-chrome/id535886823&hl=en")
@@ -119,21 +119,21 @@ def test_dict_keys_fixup_no_change():
     original_dict = {'a':'1','w':'2', 'x':'3'}
     resulting_dict = storespy.__dict_keys_value_fixup(original_dict, expected_keys_mapping_dict)
 
-    assert resulting_dict == {'a':'1','w':'2','x':'3'}
+    assert resulting_dict == {'a':'1','w':'2','x':'3', 'z': ''}
 
 def test_dict_keys_fixup_expected_key_present():
-    expected_keys_mapping_dict = {'a':'z', 'w':'c', 'z':'d'}
+    expected_keys_mapping_dict = {'a':'z', 'w':'c', 'x':'d'}
     original_dict = {'a':'1','w':'2', 'z':'3'}
     resulting_dict = storespy.__dict_keys_value_fixup(original_dict, expected_keys_mapping_dict)
 
-    assert resulting_dict == {'a':'3','w':'2'}
+    assert resulting_dict == {'a':'3','w':'2','x':''}
 
 def test_dict_keys_fixup_key_not_present():
     expected_keys_mapping_dict = {'a':'z', 'w':'c', 'z':'d'}
     original_dict = {'a':'1','e':'2', 'f':'3'}
     resulting_dict = storespy.__dict_keys_value_fixup(original_dict, expected_keys_mapping_dict)
 
-    assert resulting_dict == {'a':'1','e':'2','f':'3'}
+    assert resulting_dict == {'a':'1','e':'2','f':'3','w':'','z':''}
 
 def test_dict_key_fixup():
     expected_key = 'w'
@@ -157,7 +157,7 @@ def test_dict_key_fixup_key_not_present():
     original_dict = {'a':'1','b':'2'}
     resulting_dict = storespy.__dict_key_value_fixup(original_dict, expected_key, mapped_key)
 
-    assert resulting_dict == {'a':'1','b':'2'}
+    assert resulting_dict == {'a':'1','b':'2', 'w':''}
 
 def test_dict_key_fixup_key_expected_key_present():
     expected_key = 'w'

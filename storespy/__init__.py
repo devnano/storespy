@@ -30,7 +30,7 @@ fields_mapping_dict = {
      'minimumOsVersion':'required_android_version',
      'content_rating':'trackContentRating',
      'screenshotUrls':'screenshots',
-     'fileSizeBytes':'size',
+     'fileSizeBytes':{'type': int, 'mapped_key': 'size'},
      'releaseNotes':'recent_changes',
      'url':'trackViewUrl'
      }
@@ -143,6 +143,9 @@ def __dict_key_value_fixup(original_dict, expected_key, mapped_key_value):
 
     if mapped_key in original_dict:
         original_dict[expected_key] = original_dict.pop(mapped_key)
+
+    if expected_key not in original_dict.keys():
+        original_dict[expected_key] = ''
 
     if (expected_type != None) and not isinstance(original_dict[expected_key], expected_type):
         try:
