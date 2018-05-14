@@ -36,7 +36,7 @@ DEPENDENCY_LINKS = [
 
 setuptools.setup(
     name='storespy',
-    version='0.0.20',
+    version='0.0.21',
     description='Get Google Play and App Store app info.',
     packages=['storespy'],
     install_requires=REQUIRED_PACKAGES,
