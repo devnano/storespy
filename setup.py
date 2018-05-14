@@ -27,16 +27,16 @@ REQUIRED_PACKAGES = [
     'pytest==3.3.2',
     'xmltodict==0.11.0',
     'python-dateutil==2.6.1',
-    'play-scraper>=0.2.0'
+    'play-scraper>=0.3.0'
     ]
 
 DEPENDENCY_LINKS = [
-    'git+https://github.com/winclap/play-scraper@0.2.0#egg=play-scraper-0.2.0'
+    'git+https://github.com/winclap/play-scraper@0.3.0#egg=play-scraper-0.3.0'
 ]
 
 setuptools.setup(
     name='storespy',
-    version='0.0.19',
+    version='0.0.20',
     description='Get Google Play and App Store app info.',
     packages=['storespy'],
     install_requires=REQUIRED_PACKAGES,
