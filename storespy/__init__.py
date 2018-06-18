@@ -137,22 +137,25 @@ def __dict_keys_value_fixup(original_dict, expected_keys_value_mapping):
 def __dict_key_value_fixup(original_dict, expected_key, mapped_key_value):
     mapped_key = mapped_key_value
     expected_type = None
+
     if isinstance(mapped_key_value, dict):
         mapped_key = mapped_key_value['mapped_key']
         expected_type = mapped_key_value['type']
-
+        
     if mapped_key in original_dict:
         original_dict[expected_key] = original_dict.pop(mapped_key)
 
     if expected_key not in original_dict.keys():
         original_dict[expected_key] = ''
+        
+    if expected_key == 'fileSizeBytes' and len(original_dict[expected_key]) > 1 and original_dict[expected_key][-1] == 'M':
+        mb = (int)(original_dict[expected_key][:-1]) * 1024 * 1024
+        original_dict[expected_key] = mb
 
     if (expected_type != None) and not isinstance(original_dict[expected_key], expected_type):
         try:
             original_dict[expected_key] = expected_type(original_dict[expected_key])
         except Exception as e:
-            print(e)
-            print('Assigning None to field \'{}\''.format(expected_key) )
             original_dict[expected_key] = None
 
     return original_dict
