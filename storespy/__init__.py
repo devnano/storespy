@@ -149,7 +149,7 @@ def __dict_key_value_fixup(original_dict, expected_key, mapped_key_value):
         original_dict[expected_key] = ''
         
     if expected_key == 'fileSizeBytes' and len(original_dict[expected_key]) > 1 and original_dict[expected_key][-1] == 'M':
-        mb = (int)(original_dict[expected_key][:-1]) * 1024 * 1024
+        mb = (float)(original_dict[expected_key][:-1]) * 1024 * 1024
         original_dict[expected_key] = mb
 
     if (expected_type != None) and not isinstance(original_dict[expected_key], expected_type):
